@@ -5,6 +5,11 @@ from models.task import Task, TaskError
 
 
 def create_project() -> None:
+    """
+    Prompt the user to create a new project by entering a name and optional description.
+
+    Validates input and handles ProjectError if creation fails.
+    """
     while True:
         name = input("Project name: ").strip()
         if not name:
@@ -22,10 +27,19 @@ def create_project() -> None:
 
 
 def show_projects() -> None:
+    """
+    Display a list of all existing projects with their ID, name, and description.
+    """
     print(Project.list_projects())
 
 
 def add_task_to_project() -> None:
+    """
+    Prompt the user to add a task to an existing project.
+
+    Requests project ID, task title, optional description, and optional deadline.
+    Handles TaskError or ProjectError if adding fails.
+    """
     project_id = input("Project ID: ").strip()
     project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
     if not project:
@@ -50,6 +64,11 @@ def add_task_to_project() -> None:
 
 
 def list_tasks_of_project() -> None:
+    """
+    Display all tasks of a specific project identified by project ID.
+
+    If project not found, prints an error message.
+    """
     project_id = input("Project ID: ").strip()
     project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
     if not project:
@@ -60,6 +79,12 @@ def list_tasks_of_project() -> None:
 
 
 def edit_task_in_project() -> None:
+    """
+    Edit an existing task in a project.
+
+    Prompts for project ID, task ID, and new task details (title, description, status, deadline).
+    Handles TaskError if editing fails.
+    """
     project_id = input("Project ID: ").strip()
     project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
     if not project:
@@ -79,6 +104,12 @@ def edit_task_in_project() -> None:
 
 
 def update_task_status() -> None:
+    """
+    Update the status of a specific task in a project.
+
+    Prompts for project ID, task ID, and new status.
+    Handles TaskError if update fails.
+    """
     project_id = input("Project ID: ").strip()
     project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
     if not project:
@@ -95,6 +126,11 @@ def update_task_status() -> None:
 
 
 def delete_task_from_project() -> None:
+    """
+    Delete a specific task from a project.
+
+    Prompts for project ID and task ID. Prints success or error message.
+    """
     project_id = input("Project ID: ").strip()
     project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
     if not project:
@@ -106,6 +142,11 @@ def delete_task_from_project() -> None:
 
 
 def delete_project() -> None:
+    """
+    Delete an entire project and all its tasks.
+
+    Prompts for project ID. Prints success or error message.
+    """
     project_id = input("Project ID: ").strip()
     project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
     if not project:
@@ -116,6 +157,11 @@ def delete_project() -> None:
 
 
 def edit_project() -> None:
+    """
+    Edit the name and/or description of a project.
+
+    Prompts for project ID and new name/description. Handles ProjectError if update fails.
+    """
     project_id = input("Project ID: ").strip()
     project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
     if not project:

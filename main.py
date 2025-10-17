@@ -1,3 +1,10 @@
+"""
+Main entry point for the Project and Task Manager CLI.
+
+Provides a command-line interface for creating and managing projects and tasks.
+Users can create projects, add tasks, edit tasks, update statuses, and delete projects/tasks.
+"""
+
 from interface.cli import (
     create_project,
     show_projects,
@@ -12,6 +19,23 @@ from interface.cli import (
 
 
 def main() -> None:
+    """
+    Display the main menu and handle user input for project and task management.
+
+    The menu allows users to:
+        1. Create a new project
+        2. Show all projects
+        3. Add a task to a project
+        4. Show tasks of a project
+        5. Edit a task
+        6. Update task status
+        7. Delete a task
+        8. Edit a project
+        9. Delete a project
+        10. Exit the program
+
+    Loops until the user chooses to exit.
+    """
     print("📋 Welcome to the Project and Task Manager")
 
     while True:
