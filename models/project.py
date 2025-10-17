@@ -97,7 +97,16 @@ class Project:
     @classmethod
     def get_all_projects(cls):
         return cls._all_projects
-
+    
+    @classmethod
+    def list_projects(cls):
+        if not cls._all_projects:
+            return "⚠️ هیچ پروژه‌ای وجود ندارد."
+        
+        output = []
+        for project in cls._all_projects:
+            output.append(f"ID: {project.id}\nName: {project.name}\nDescription: {project.description}\n")
+        return "\n".join(output)
     def update_name(self, new_name: str):
         if any(p.name == new_name and p is not self for p in Project._all_projects):
             raise ProjectError(f"A project with the name '{new_name}' already exists.")
