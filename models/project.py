@@ -1,6 +1,6 @@
 from typing import ClassVar, List
 import uuid
-from task import Task, TaskError 
+from models.task import Task, TaskError
 MAX_NUMBER_OF_PROJECT = 5   # حداکثر پروژه‌ها
 MAX_NUMBER_OF_TASK = 10     # حداکثر تسک‌ها در هر پروژه
 
