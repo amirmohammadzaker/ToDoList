@@ -4,8 +4,15 @@ from models.task import Task, TaskError
 
 
 def create_project():
-    name = input("Project name: ").strip()
-    description = input("Project description: ").strip()
+    while True:
+        name = input("Project name: ").strip()
+        if not name:
+            print("❌ Project name is required. Please enter a name.")
+            continue
+        break
+
+    description = input("Project description (optional): ").strip()
+
     try:
         project = Project(name, description)
         print(f"✅ Project '{name}' has been created successfully.")
