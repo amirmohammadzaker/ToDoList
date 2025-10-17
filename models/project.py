@@ -23,7 +23,7 @@ class Project:
         if any(p.name == name for p in Project._all_projects):
             raise ProjectError(f"A project with the name '{name}' already exists.")
         
-        self.id = str(uuid.uuid4())
+        self.id = str(uuid.uuid4())[:6]  # 6 کاراکتر اول UUID به عنوان شناسه کوتاه
         self.name = name
         self.description = description
         self.tasks = []
