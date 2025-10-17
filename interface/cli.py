@@ -31,8 +31,14 @@ def add_task_to_project():
         print(f"❌ No project found with ID '{project_id}'.")
         return
 
-    title = input("Task title: ").strip()
-    description = input("Task description: ").strip()
+    while True:
+        title = input("Task title: ").strip()
+        if not title:
+            print("❌ Task title is required. Please enter a title.")
+            continue
+        break
+
+    description = input("Task description (optional): ").strip()
     deadline = input("Deadline (YYYY-MM-DD) or leave blank: ").strip() or None
 
     try:
@@ -40,7 +46,6 @@ def add_task_to_project():
         print(project.add_task(task))
     except (TaskError, ProjectError) as e:
         print(f"❌ Error: {e}")
-
 
 def list_tasks_of_project():
     project_id = input("Project ID: ").strip()
