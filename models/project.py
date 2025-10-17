@@ -1,6 +1,7 @@
 from typing import ClassVar, List
 import uuid
 from models.task import Task, TaskError
+from datetime import datetime
 MAX_NUMBER_OF_PROJECT = 5   # حداکثر پروژه‌ها
 MAX_NUMBER_OF_TASK = 10     # حداکثر تسک‌ها در هر پروژه
 
@@ -51,7 +52,6 @@ class Project:
     # ویرایش تسک
     def edit_task(self, task_id: str, title: str = None, description: str = None, 
                 status: str = None, deadline: str = None):
-        from task import TaskError  # اگر TaskError جداست
 
         # پیدا کردن تسک با id
         for task in self.tasks:
@@ -77,7 +77,6 @@ class Project:
                 # تغییر ددلاین
                 if deadline is not None:
                     try:
-                        from datetime import datetime
                         datetime.strptime(deadline, "%Y-%m-%d")
                     except ValueError:
                         raise TaskError("Deadline must be a valid date in YYYY-MM-DD format.")
