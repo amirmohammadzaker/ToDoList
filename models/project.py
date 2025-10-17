@@ -2,6 +2,7 @@ from typing import ClassVar, List
 import uuid
 
 MAX_NUMBER_OF_PROJECT = 5  # حداکثر تعداد پروژه‌ها
+MAX_NUMBER_OF_TASK = 10     # حداکثر تسک‌ها در هر پروژه
 
 class ProjectError(Exception):
     pass
