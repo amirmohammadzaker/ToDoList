@@ -1,6 +1,6 @@
 from typing import ClassVar, List
 import uuid
-
+from task import Task, TaskError 
 MAX_NUMBER_OF_PROJECT = 5   # حداکثر پروژه‌ها
 MAX_NUMBER_OF_TASK = 10     # حداکثر تسک‌ها در هر پروژه
 
@@ -27,12 +27,23 @@ class Project:
 
         Project._all_projects.append(self)
 
-
     def add_task(self, task):
         if len(self.tasks) >= MAX_NUMBER_OF_TASK:
             raise ProjectError(f"Cannot add more than {MAX_NUMBER_OF_TASK} tasks to project '{self.name}'.")
         self.tasks.append(task)
         return f"✅ Task '{task.title}' added successfully to project '{self.name}'."
+
+    def update_task_status(self, task_id: str, new_status: str):
+        VALID_STATUSES = {"todo", "doing", "done"}
+        if new_status not in VALID_STATUSES:
+            raise TaskError(f"Invalid status '{new_status}'. Must be one of {VALID_STATUSES}.")
+        
+        for task in self.tasks:
+            if task.id == task_id:
+                task.status = new_status
+                return f"✅ Status of task '{task.title}' updated to '{new_status}'."
+        
+        raise TaskError(f"Task with id '{task_id}' not found in project '{self.name}'.")
 
     @classmethod
     def get_all_projects(cls):
