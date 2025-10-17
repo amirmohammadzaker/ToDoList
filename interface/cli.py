@@ -4,8 +4,15 @@ from models.task import Task, TaskError
 
 
 def create_project():
-    name = input("Project name: ").strip()
-    description = input("Project description: ").strip()
+    while True:
+        name = input("Project name: ").strip()
+        if not name:
+            print("❌ Project name is required. Please enter a name.")
+            continue
+        break
+
+    description = input("Project description (optional): ").strip()
+
     try:
         project = Project(name, description)
         print(f"✅ Project '{name}' has been created successfully.")
@@ -24,8 +31,14 @@ def add_task_to_project():
         print(f"❌ No project found with ID '{project_id}'.")
         return
 
-    title = input("Task title: ").strip()
-    description = input("Task description: ").strip()
+    while True:
+        title = input("Task title: ").strip()
+        if not title:
+            print("❌ Task title is required. Please enter a title.")
+            continue
+        break
+
+    description = input("Task description (optional): ").strip()
     deadline = input("Deadline (YYYY-MM-DD) or leave blank: ").strip() or None
 
     try:
@@ -33,7 +46,6 @@ def add_task_to_project():
         print(project.add_task(task))
     except (TaskError, ProjectError) as e:
         print(f"❌ Error: {e}")
-
 
 def list_tasks_of_project():
     project_id = input("Project ID: ").strip()
@@ -99,3 +111,22 @@ def delete_project():
         return
 
     print(project.delete_project())
+
+def edit_project():
+    project_id = input("Project ID: ").strip()
+    project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
+    if not project:
+        print(f"❌ Project with ID '{project_id}' not found.")
+        return
+    
+    new_name = input("New project name (leave empty to skip): ").strip() or None
+    new_description = input("New project description (leave empty to skip): ").strip() or None
+    
+    try:
+        if new_name:
+            project.update_name(new_name)
+        if new_description:
+            project.update_description(new_description)
+        print(f"✅ Project '{project.name}' updated successfully.")
+    except ProjectError as e:
+        print(f"❌ Error: {e}")
