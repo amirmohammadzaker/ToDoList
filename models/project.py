@@ -132,8 +132,14 @@ class Project:
         output = []
         for task in self.tasks:
             deadline = task.deadline if task.deadline else "None"
-            output.append(f"ID: {task.id}\nTitle: {task.title}\nStatus: {task.status}\nDeadline: {deadline}\n")
+            output.append(
+                f"ID: {task.id}\n"
+                f"Title: {task.title}\n"
+                f"Description: {task.description}\n"
+                f"Status: {task.status}\n"
+                f"Deadline: {deadline}\n"
+            )
         return "\n".join(output)
-            
+
     def __repr__(self):
         return f"<Project id={self.id} name={self.name} tasks={len(self.tasks)}>"
