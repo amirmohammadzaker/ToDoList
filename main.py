@@ -1,0 +1,52 @@
+from interface.cli import (
+    create_project,
+    show_projects,
+    add_task_to_project,
+    list_tasks_of_project,
+    edit_task_in_project,
+    update_task_status,
+    delete_task_from_project,
+    delete_project,
+)
+
+def main():
+    print("📋 Welcome to the Project and Task Manager")
+    
+    while True:
+        print("\n--- Menu ---")
+        print("1. Create a new project")
+        print("2. Show all projects")
+        print("3. Add a task to a project")
+        print("4. Show tasks of a project")
+        print("5. Edit a task")
+        print("6. Update task status")
+        print("7. Delete a task")
+        print("8. Delete a project")
+        print("9. Exit")
+        
+        choice = input("Your choice: ").strip()
+        
+        if choice == "1":
+            create_project()
+        elif choice == "2":
+            show_projects()
+        elif choice == "3":
+            add_task_to_project()
+        elif choice == "4":
+            list_tasks_of_project()
+        elif choice == "5":
+            edit_task_in_project()
+        elif choice == "6":
+            update_task_status()
+        elif choice == "7":
+            delete_task_from_project()
+        elif choice == "8":
+            delete_project()
+        elif choice == "9":
+            print("👋 Exiting the program. Goodbye!")
+            break
+        else:
+            print("❌ Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
