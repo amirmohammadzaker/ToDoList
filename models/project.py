@@ -14,8 +14,8 @@ class Project:
         if len(Project._all_projects) >= MAX_NUMBER_OF_PROJECT:
             raise ProjectError(f"Cannot create more than {MAX_NUMBER_OF_PROJECT} projects.")
         
-        if len(description.split()) < 30 or len(description) < 150:
-            raise ProjectError("Project description must be at least 30 words and 150 characters.")
+        if len(description.split()) < 150:
+            raise ProjectError("Project description must be less than 150 words.")
         
         if any(p.name == name for p in Project._all_projects):
             raise ProjectError(f"A project with the name '{name}' already exists.")
