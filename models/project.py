@@ -1,7 +1,7 @@
 from typing import ClassVar, List
 import uuid
 
-MAX_NUMBER_OF_PROJECT = 5  # حداکثر تعداد پروژه‌ها
+MAX_NUMBER_OF_PROJECT = 5   # حداکثر پروژه‌ها
 MAX_NUMBER_OF_TASK = 10     # حداکثر تسک‌ها در هر پروژه
 
 class ProjectError(Exception):
@@ -20,27 +20,34 @@ class Project:
         if any(p.name == name for p in Project._all_projects):
             raise ProjectError(f"A project with the name '{name}' already exists.")
         
-        self.id = str(uuid.uuid4())  
+        self.id = str(uuid.uuid4())
         self.name = name
         self.description = description
-        self.tasks = []  
-        
+        self.tasks = []
+
         Project._all_projects.append(self)
-    
+
+
+    def add_task(self, task):
+        if len(self.tasks) >= MAX_NUMBER_OF_TASK:
+            raise ProjectError(f"Cannot add more than {MAX_NUMBER_OF_TASK} tasks to project '{self.name}'.")
+        self.tasks.append(task)
+        return f"✅ Task '{task.title}' added successfully to project '{self.name}'."
+
     @classmethod
     def get_all_projects(cls):
         return cls._all_projects
-    
+
     def update_name(self, new_name: str):
         if any(p.name == new_name and p is not self for p in Project._all_projects):
             raise ProjectError(f"A project with the name '{new_name}' already exists.")
         self.name = new_name
-    
+
     def update_description(self, new_description: str):
         if len(new_description.split()) < 30 or len(new_description) < 150:
             raise ProjectError("Project description must be at least 30 words and 150 characters.")
         self.description = new_description
-    
+
     def delete_project(self):
         try:
             self.tasks.clear()
