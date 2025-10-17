@@ -99,3 +99,22 @@ def delete_project():
         return
 
     print(project.delete_project())
+
+def edit_project():
+    project_id = input("Project ID: ").strip()
+    project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
+    if not project:
+        print(f"❌ Project with ID '{project_id}' not found.")
+        return
+    
+    new_name = input("New project name (leave empty to skip): ").strip() or None
+    new_description = input("New project description (leave empty to skip): ").strip() or None
+    
+    try:
+        if new_name:
+            project.update_name(new_name)
+        if new_description:
+            project.update_description(new_description)
+        print(f"✅ Project '{project.name}' updated successfully.")
+    except ProjectError as e:
+        print(f"❌ Error: {e}")
