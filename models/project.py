@@ -2,8 +2,9 @@ from typing import ClassVar, List
 import uuid
 from models.task import Task, TaskError
 from datetime import datetime
-MAX_NUMBER_OF_PROJECT = 5   # حداکثر پروژه‌ها
-MAX_NUMBER_OF_TASK = 10     # حداکثر تسک‌ها در هر پروژه
+
+MAX_NUMBER_OF_PROJECT = 5   # Maximum number of projects
+MAX_NUMBER_OF_TASK = 10     # Maximum number of tasks per project
 
 class ProjectError(Exception):
     pass
@@ -24,14 +25,14 @@ class Project:
         if any(p.name == name for p in Project._all_projects):
             raise ProjectError(f"A project with the name '{name}' already exists.")
         
-        self.id = str(uuid.uuid4())[:6]  # 6 کاراکتر اول UUID به عنوان شناسه کوتاه
+        self.id = str(uuid.uuid4())[:6]  # First 6 characters of UUID as short ID
         self.name = name
         self.description = description
         self.tasks = []
 
         Project._all_projects.append(self)
 
-    def add_task(self, task):
+    def add_task(self, task: Task):
         if len(self.tasks) >= MAX_NUMBER_OF_TASK:
             raise ProjectError(f"Cannot add more than {MAX_NUMBER_OF_TASK} tasks to project '{self.name}'.")
         self.tasks.append(task)
@@ -48,33 +49,31 @@ class Project:
                 return f"✅ Status of task '{task.title}' updated to '{new_status}'."
         
         raise TaskError(f"Task with id '{task_id}' not found in project '{self.name}'.")
-    
-    # ویرایش تسک
-    def edit_task(self, task_id: str, title: str = None, description: str = None, 
-                status: str = None, deadline: str = None):
 
-        # پیدا کردن تسک با id
+    def edit_task(self, task_id: str, title: str = None, description: str = None, 
+                  status: str = None, deadline: str = None):
+
         for task in self.tasks:
             if task.id == task_id:
-                # تغییر عنوان
+                # Update title
                 if title is not None:
                     if len(title.split()) > 30:
                         raise TaskError("Task title cannot exceed 30 words.")
                     task.title = title
 
-                # تغییر توضیح
+                # Update description
                 if description is not None:
                     if len(description.split()) > 150:
                         raise TaskError("Task description cannot exceed 150 words.")
                     task.description = description
 
-                # تغییر وضعیت
+                # Update status
                 if status is not None:
                     if status not in Task.VALID_STATUSES:
                         raise TaskError(f"Invalid status '{status}'. Must be one of {Task.VALID_STATUSES}.")
                     task.status = status
 
-                # تغییر ددلاین
+                # Update deadline
                 if deadline is not None:
                     try:
                         datetime.strptime(deadline, "%Y-%m-%d")
@@ -85,16 +84,14 @@ class Project:
                 return f"✅ Task '{task.title}' updated successfully."
 
         raise TaskError(f"Task with id '{task_id}' not found in project '{self.name}'.")
+
     def delete_task(self, task_id: str):
-        
         for task in self.tasks:
             if task.id == task_id:
                 self.tasks.remove(task)
                 return f"✅ Task '{task.title}' successfully deleted from project '{self.name}'."
         
         return f"❌ Error: Task with id '{task_id}' not found in project '{self.name}'."
-            
-
 
     @classmethod
     def get_all_projects(cls):
@@ -103,12 +100,13 @@ class Project:
     @classmethod
     def list_projects(cls):
         if not cls._all_projects:
-            return "⚠️ هیچ پروژه‌ای وجود ندارد."
+            return "⚠️ No projects exist."
         
         output = []
         for project in cls._all_projects:
             output.append(f"ID: {project.id}\nName: {project.name}\nDescription: {project.description}\n")
         return "\n".join(output)
+
     def update_name(self, new_name: str):
         if any(p.name == new_name and p is not self for p in Project._all_projects):
             raise ProjectError(f"A project with the name '{new_name}' already exists.")
@@ -126,13 +124,14 @@ class Project:
             return f"✅ Project '{self.name}' and its tasks were successfully deleted."
         except ValueError:
             return f"❌ Error: Project '{self.name}' was not found."
+
     def list_tasks(self):
         if not self.tasks:
-            return f"⚠️ پروژه '{self.name}' هیچ تسکی ندارد."
+            return f"⚠️ Project '{self.name}' has no tasks."
         
         output = []
         for task in self.tasks:
-            deadline = task.deadline if task.deadline else "ندارد"
+            deadline = task.deadline if task.deadline else "None"
             output.append(f"ID: {task.id}\nTitle: {task.title}\nStatus: {task.status}\nDeadline: {deadline}\n")
         return "\n".join(output)
             
