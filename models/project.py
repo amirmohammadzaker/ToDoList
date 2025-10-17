@@ -44,6 +44,47 @@ class Project:
                 return f"✅ Status of task '{task.title}' updated to '{new_status}'."
         
         raise TaskError(f"Task with id '{task_id}' not found in project '{self.name}'.")
+    
+    # ویرایش تسک
+    def edit_task(self, task_id: str, title: str = None, description: str = None, 
+                status: str = None, deadline: str = None):
+        from task import TaskError  # اگر TaskError جداست
+
+        # پیدا کردن تسک با id
+        for task in self.tasks:
+            if task.id == task_id:
+                # تغییر عنوان
+                if title is not None:
+                    if len(title.split()) > 30:
+                        raise TaskError("Task title cannot exceed 30 words.")
+                    task.title = title
+
+                # تغییر توضیح
+                if description is not None:
+                    if len(description.split()) > 150:
+                        raise TaskError("Task description cannot exceed 150 words.")
+                    task.description = description
+
+                # تغییر وضعیت
+                if status is not None:
+                    if status not in Task.VALID_STATUSES:
+                        raise TaskError(f"Invalid status '{status}'. Must be one of {Task.VALID_STATUSES}.")
+                    task.status = status
+
+                # تغییر ددلاین
+                if deadline is not None:
+                    try:
+                        from datetime import datetime
+                        datetime.strptime(deadline, "%Y-%m-%d")
+                    except ValueError:
+                        raise TaskError("Deadline must be a valid date in YYYY-MM-DD format.")
+                    task.deadline = deadline
+
+                return f"✅ Task '{task.title}' updated successfully."
+
+        raise TaskError(f"Task with id '{task_id}' not found in project '{self.name}'.")
+        
+    
 
     @classmethod
     def get_all_projects(cls):
