@@ -40,5 +40,13 @@ class Project:
             raise ProjectError("Project description must be at least 30 words and 150 characters.")
         self.description = new_description
     
+    def delete_project(self):
+        try:
+            self.tasks.clear()
+            Project._all_projects.remove(self)
+            return f"✅ Project '{self.name}' and its tasks were successfully deleted."
+        except ValueError:
+            return f"❌ Error: Project '{self.name}' was not found."
+        
     def __repr__(self):
         return f"<Project id={self.id} name={self.name} tasks={len(self.tasks)}>"
