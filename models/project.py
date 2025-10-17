@@ -83,8 +83,16 @@ class Project:
                 return f"✅ Task '{task.title}' updated successfully."
 
         raise TaskError(f"Task with id '{task_id}' not found in project '{self.name}'.")
+    def delete_task(self, task_id: str):
         
-    
+        for task in self.tasks:
+            if task.id == task_id:
+                self.tasks.remove(task)
+                return f"✅ Task '{task.title}' successfully deleted from project '{self.name}'."
+        
+        return f"❌ Error: Task with id '{task_id}' not found in project '{self.name}'."
+            
+
 
     @classmethod
     def get_all_projects(cls):

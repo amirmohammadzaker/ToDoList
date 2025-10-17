@@ -27,7 +27,7 @@ class Task:
             except ValueError:
                 raise TaskError("Deadline must be a valid date in YYYY-MM-DD format.")
 
-        self.short_id = str(uuid.uuid4())[:6]  # 6 کاراکتر اول UUID به عنوان شناسه کوتاه
+        self.id = str(uuid.uuid4())[:6]  # 6 کاراکتر اول UUID به عنوان شناسه کوتاه
         self.title = title
         self.description = description
         self.status = status
