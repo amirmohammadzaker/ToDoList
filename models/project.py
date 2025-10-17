@@ -1,10 +1,14 @@
+import os
+from dotenv import load_dotenv
 from typing import ClassVar, List
 import uuid
 from models.task import Task, TaskError
 from datetime import datetime
 
-MAX_NUMBER_OF_PROJECT = 5   # Maximum number of projects
-MAX_NUMBER_OF_TASK = 10     # Maximum number of tasks per project
+load_dotenv()
+
+MAX_NUMBER_OF_PROJECT = int(os.getenv("MAX_NUMBER_OF_PROJECT", 5))
+MAX_NUMBER_OF_TASK = int(os.getenv("MAX_NUMBER_OF_TASK", 10))
 
 class ProjectError(Exception):
     pass
