@@ -7,12 +7,13 @@ from interface.cli import (
     update_task_status,
     delete_task_from_project,
     delete_project,
-    edit_project
+    edit_project,
 )
 
-def main():
+
+def main() -> None:
     print("📋 Welcome to the Project and Task Manager")
-    
+
     while True:
         print("1. Create a new project")
         print("2. Show all projects")
@@ -21,13 +22,12 @@ def main():
         print("5. Edit a task")
         print("6. Update task status")
         print("7. Delete a task")
-        print("8. Edit a project")  
+        print("8. Edit a project")
         print("9. Delete a project")
         print("10. Exit")
 
-        
-        choice = input("Your choice: ").strip()
-        
+        choice: str = input("Your choice: ").strip()
+
         if choice == "1":
             create_project()
         elif choice == "2":
@@ -51,6 +51,7 @@ def main():
             break
         else:
             print("❌ Invalid choice. Please try again.")
+
 
 if __name__ == "__main__":
     main()

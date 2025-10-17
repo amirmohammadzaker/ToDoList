@@ -1,9 +1,10 @@
-# interface/cli.py
+from typing import Optional
+
 from models.project import Project, ProjectError
 from models.task import Task, TaskError
 
 
-def create_project():
+def create_project() -> None:
     while True:
         name = input("Project name: ").strip()
         if not name:
@@ -20,11 +21,11 @@ def create_project():
         print(f"❌ Error: {e}")
 
 
-def show_projects():
+def show_projects() -> None:
     print(Project.list_projects())
 
 
-def add_task_to_project():
+def add_task_to_project() -> None:
     project_id = input("Project ID: ").strip()
     project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
     if not project:
@@ -47,7 +48,8 @@ def add_task_to_project():
     except (TaskError, ProjectError) as e:
         print(f"❌ Error: {e}")
 
-def list_tasks_of_project():
+
+def list_tasks_of_project() -> None:
     project_id = input("Project ID: ").strip()
     project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
     if not project:
@@ -57,7 +59,7 @@ def list_tasks_of_project():
     print(project.list_tasks())
 
 
-def edit_task_in_project():
+def edit_task_in_project() -> None:
     project_id = input("Project ID: ").strip()
     project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
     if not project:
@@ -76,7 +78,7 @@ def edit_task_in_project():
         print(f"❌ Error: {e}")
 
 
-def update_task_status():
+def update_task_status() -> None:
     project_id = input("Project ID: ").strip()
     project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
     if not project:
@@ -92,7 +94,7 @@ def update_task_status():
         print(f"❌ Error: {e}")
 
 
-def delete_task_from_project():
+def delete_task_from_project() -> None:
     project_id = input("Project ID: ").strip()
     project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
     if not project:
@@ -103,7 +105,7 @@ def delete_task_from_project():
     print(project.delete_task(task_id))
 
 
-def delete_project():
+def delete_project() -> None:
     project_id = input("Project ID: ").strip()
     project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
     if not project:
@@ -112,16 +114,17 @@ def delete_project():
 
     print(project.delete_project())
 
-def edit_project():
+
+def edit_project() -> None:
     project_id = input("Project ID: ").strip()
     project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
     if not project:
         print(f"❌ Project with ID '{project_id}' not found.")
         return
-    
+
     new_name = input("New project name (leave empty to skip): ").strip() or None
     new_description = input("New project description (leave empty to skip): ").strip() or None
-    
+
     try:
         if new_name:
             project.update_name(new_name)
