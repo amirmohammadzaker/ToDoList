@@ -124,6 +124,15 @@ class Project:
             return f"✅ Project '{self.name}' and its tasks were successfully deleted."
         except ValueError:
             return f"❌ Error: Project '{self.name}' was not found."
+    def list_tasks(self):
+        if not self.tasks:
+            return f"⚠️ پروژه '{self.name}' هیچ تسکی ندارد."
         
+        output = []
+        for task in self.tasks:
+            deadline = task.deadline if task.deadline else "ندارد"
+            output.append(f"ID: {task.id}\nTitle: {task.title}\nStatus: {task.status}\nDeadline: {deadline}\n")
+        return "\n".join(output)
+            
     def __repr__(self):
         return f"<Project id={self.id} name={self.name} tasks={len(self.tasks)}>"
