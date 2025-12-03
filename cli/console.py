@@ -1,181 +1,105 @@
-from typing import Optional
+# app/cli/console.py
 
-from models.project import Project, ProjectError
-from models.task import Task, TaskError
+class TaskCLI:
+    def __init__(self, project_service, task_service):
+        """
+        Dependency Injection: سرویس‌ها از بیرون به CLI داده می‌شوند.
+        """
+        self.project_service = project_service
+        self.task_service = task_service
 
-
-def create_project() -> None:
-    """
-    Prompt the user to create a new project by entering a name and optional description.
-
-    Validates input and handles ProjectError if creation fails.
-    """
-    while True:
+    # ====================== Project Commands ======================
+    def create_project(self):
         name = input("Project name: ").strip()
-        if not name:
-            print("❌ Project name is required. Please enter a name.")
-            continue
-        break
+        description = input("Project description (optional): ").strip()
+        try:
+            project = self.project_service.create_project(name, description)
+            print(f"✅ Project '{project.name}' created successfully.")
+        except Exception as e:
+            print(f"❌ Error: {e}")
 
-    description = input("Project description (optional): ").strip()
+    def list_projects(self):
+        try:
+            projects = self.project_service.list_projects()
+            if not projects:
+                print("⚠️ No projects found.")
+                return
+            for project in projects:
+                print(f"ID: {project.id}\nName: {project.name}\nDescription: {project.description}\n")
+        except Exception as e:
+            print(f"❌ Error: {e}")
 
-    try:
-        project = Project(name, description)
-        print(f"✅ Project '{name}' has been created successfully.")
-    except ProjectError as e:
-        print(f"❌ Error: {e}")
+    def edit_project(self):
+        project_id = input("Project ID: ").strip()
+        new_name = input("New project name (leave blank to skip): ").strip() or None
+        new_description = input("New description (leave blank to skip): ").strip() or None
+        try:
+            self.project_service.edit_project(project_id, new_name, new_description)
+            print("✅ Project updated successfully.")
+        except Exception as e:
+            print(f"❌ Error: {e}")
 
+    def delete_project(self):
+        project_id = input("Project ID: ").strip()
+        try:
+            self.project_service.delete_project(project_id)
+            print("✅ Project deleted successfully.")
+        except Exception as e:
+            print(f"❌ Error: {e}")
 
-def show_projects() -> None:
-    """
-    Display a list of all existing projects with their ID, name, and description.
-    """
-    print(Project.list_projects())
-
-
-def add_task_to_project() -> None:
-    """
-    Prompt the user to add a task to an existing project.
-
-    Requests project ID, task title, optional description, and optional deadline.
-    Handles TaskError or ProjectError if adding fails.
-    """
-    project_id = input("Project ID: ").strip()
-    project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
-    if not project:
-        print(f"❌ No project found with ID '{project_id}'.")
-        return
-
-    while True:
+    # ====================== Task Commands ======================
+    def add_task(self):
+        project_id = input("Project ID: ").strip()
         title = input("Task title: ").strip()
-        if not title:
-            print("❌ Task title is required. Please enter a title.")
-            continue
-        break
+        description = input("Task description (optional): ").strip()
+        deadline = input("Deadline (YYYY-MM-DD, optional): ").strip() or None
+        try:
+            task = self.task_service.create_task(project_id, title, description, deadline)
+            print(f"✅ Task '{task.title}' added to project {project_id}.")
+        except Exception as e:
+            print(f"❌ Error: {e}")
 
-    description = input("Task description (optional): ").strip()
-    deadline = input("Deadline (YYYY-MM-DD) or leave blank: ").strip() or None
+    def list_tasks(self):
+        project_id = input("Project ID: ").strip()
+        try:
+            tasks = self.task_service.list_tasks(project_id)
+            if not tasks:
+                print("⚠️ No tasks found.")
+                return
+            for task in tasks:
+                deadline = task.deadline if task.deadline else "None"
+                print(f"ID: {task.id}\nTitle: {task.title}\nDescription: {task.description}\nStatus: {task.status}\nDeadline: {deadline}\n")
+        except Exception as e:
+            print(f"❌ Error: {e}")
 
-    try:
-        task = Task(title, description, deadline=deadline)
-        print(project.add_task(task))
-    except (TaskError, ProjectError) as e:
-        print(f"❌ Error: {e}")
+    def edit_task(self):
+        project_id = input("Project ID: ").strip()
+        task_id = input("Task ID: ").strip()
+        title = input("New title (leave blank to skip): ").strip() or None
+        description = input("New description (leave blank to skip): ").strip() or None
+        status = input("New status (todo/doing/done, leave blank to skip): ").strip() or None
+        deadline = input("New deadline (YYYY-MM-DD, leave blank to skip): ").strip() or None
+        try:
+            self.task_service.edit_task(project_id, task_id, title, description, status, deadline)
+            print("✅ Task updated successfully.")
+        except Exception as e:
+            print(f"❌ Error: {e}")
 
+    def update_task_status(self):
+        project_id = input("Project ID: ").strip()
+        task_id = input("Task ID: ").strip()
+        new_status = input("New status (todo/doing/done): ").strip()
+        try:
+            self.task_service.update_status(project_id, task_id, new_status)
+            print("✅ Task status updated.")
+        except Exception as e:
+            print(f"❌ Error: {e}")
 
-def list_tasks_of_project() -> None:
-    """
-    Display all tasks of a specific project identified by project ID.
-
-    If project not found, prints an error message.
-    """
-    project_id = input("Project ID: ").strip()
-    project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
-    if not project:
-        print(f"❌ No project found with ID '{project_id}'.")
-        return
-
-    print(project.list_tasks())
-
-
-def edit_task_in_project() -> None:
-    """
-    Edit an existing task in a project.
-
-    Prompts for project ID, task ID, and new task details (title, description, status, deadline).
-    Handles TaskError if editing fails.
-    """
-    project_id = input("Project ID: ").strip()
-    project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
-    if not project:
-        print(f"❌ No project found with ID '{project_id}'.")
-        return
-
-    task_id = input("Task ID: ").strip()
-    title = input("New title (or leave blank): ").strip() or None
-    description = input("New description (or leave blank): ").strip() or None
-    status = input("New status (todo/doing/done) or leave blank: ").strip() or None
-    deadline = input("New deadline (YYYY-MM-DD) or leave blank: ").strip() or None
-
-    try:
-        print(project.edit_task(task_id, title, description, status, deadline))
-    except TaskError as e:
-        print(f"❌ Error: {e}")
-
-
-def update_task_status() -> None:
-    """
-    Update the status of a specific task in a project.
-
-    Prompts for project ID, task ID, and new status.
-    Handles TaskError if update fails.
-    """
-    project_id = input("Project ID: ").strip()
-    project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
-    if not project:
-        print(f"❌ No project found with ID '{project_id}'.")
-        return
-
-    task_id = input("Task ID: ").strip()
-    new_status = input("New status (todo/doing/done): ").strip()
-
-    try:
-        print(project.update_task_status(task_id, new_status))
-    except TaskError as e:
-        print(f"❌ Error: {e}")
-
-
-def delete_task_from_project() -> None:
-    """
-    Delete a specific task from a project.
-
-    Prompts for project ID and task ID. Prints success or error message.
-    """
-    project_id = input("Project ID: ").strip()
-    project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
-    if not project:
-        print(f"❌ No project found with ID '{project_id}'.")
-        return
-
-    task_id = input("Task ID: ").strip()
-    print(project.delete_task(task_id))
-
-
-def delete_project() -> None:
-    """
-    Delete an entire project and all its tasks.
-
-    Prompts for project ID. Prints success or error message.
-    """
-    project_id = input("Project ID: ").strip()
-    project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
-    if not project:
-        print(f"❌ No project found with ID '{project_id}'.")
-        return
-
-    print(project.delete_project())
-
-
-def edit_project() -> None:
-    """
-    Edit the name and/or description of a project.
-
-    Prompts for project ID and new name/description. Handles ProjectError if update fails.
-    """
-    project_id = input("Project ID: ").strip()
-    project = next((p for p in Project.get_all_projects() if p.id == project_id), None)
-    if not project:
-        print(f"❌ Project with ID '{project_id}' not found.")
-        return
-
-    new_name = input("New project name (leave empty to skip): ").strip() or None
-    new_description = input("New project description (leave empty to skip): ").strip() or None
-
-    try:
-        if new_name:
-            project.update_name(new_name)
-        if new_description:
-            project.update_description(new_description)
-        print(f"✅ Project '{project.name}' updated successfully.")
-    except ProjectError as e:
-        print(f"❌ Error: {e}")
+    def delete_task(self):
+        project_id = input("Project ID: ").strip()
+        task_id = input("Task ID: ").strip()
+        try:
+            self.task_service.delete_task(project_id, task_id)
+            print("✅ Task deleted successfully.")
+        except Exception as e:
+            print(f"❌ Error: {e}")
