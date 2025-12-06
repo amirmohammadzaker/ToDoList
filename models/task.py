@@ -1,12 +1,13 @@
 from sqlalchemy import Column, String, Text, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from db.base import Base
+import uuid
 
 
 class Task(Base):
     __tablename__ = "tasks"
 
-    id = Column(String(36), primary_key=True)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4())[:6])
     title = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
     status = Column(String(20), nullable=False, default="todo")
