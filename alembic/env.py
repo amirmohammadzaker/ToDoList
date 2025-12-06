@@ -23,8 +23,12 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from db.base import Base
+# Import models so Alembic sees them
+from models.project import Project
+from models.task import Task
 
 target_metadata = Base.metadata
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

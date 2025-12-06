@@ -120,6 +120,15 @@ class TaskCLI:
         except Exception as e:
             print(f"❌ Error: {e}")
 
+    def update_task_status(self):
+        task_id = input("Task ID: ").strip()
+        new_status = input("New status (todo/doing/done): ").strip()
+        try:
+            self.task_service.update_status(task_id=task_id, new_status=new_status)
+            print("✅ Task status updated successfully.")
+        except Exception as e:
+            print(f"❌ Error: {e}")
+
 
     def delete_task(self):
         task_id = input("Task ID: ").strip()

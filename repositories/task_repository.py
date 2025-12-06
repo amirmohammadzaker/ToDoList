@@ -53,13 +53,11 @@ class TaskRepository:
         self.db_session.refresh(task)
         return task
 
-    def update_task_status(self, task_id: str, new_status: str) -> None:
-        """Update the status of a task by its ID."""
-        task = self.get_task_by_id(task_id)
-        if task:
-            task.status = new_status
-            self.db_session.commit()
-            self.db_session.refresh(task)
+    def update_task_status(self, task, new_status: str):
+        task.status = new_status
+        self.db_session.commit()
+        self.db_session.refresh(task)
+        return task
 
     # -----------------------------
     # DELETE

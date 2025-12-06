@@ -20,9 +20,10 @@ class ProjectRepository:
         """Retrieve a project by its ID."""
         return self.db_session.query(ProjectModel).filter(ProjectModel.id == project_id).first()
 
-    def get_all_projects(self) -> List[ProjectModel]:
+    def list_projects(self) -> List[ProjectModel]:
         """Retrieve all projects."""
         return self.db_session.query(ProjectModel).all()
+
 
     def update_project(self, project: ProjectModel) -> ProjectModel:
         """Update a project in the database."""
