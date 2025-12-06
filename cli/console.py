@@ -9,6 +9,8 @@ class TaskCLI:
         self.task_service = task_service
 
     # ====================== Project Commands ======================
+    # ====================== Project Commands ======================
+
     def create_project(self):
         name = input("Project name: ").strip()
         description = input("Project description (optional): ").strip()
@@ -18,26 +20,35 @@ class TaskCLI:
         except Exception as e:
             print(f"❌ Error: {e}")
 
+
     def list_projects(self):
         try:
             projects = self.project_service.list_projects()
             if not projects:
                 print("⚠️ No projects found.")
                 return
-            for project in projects:
-                print(f"ID: {project.id}\nName: {project.name}\nDescription: {project.description}\n")
+
+            for p in projects:
+                print(f"ID: {p.id}\nName: {p.name}\nDescription: {p.description}\n")
         except Exception as e:
             print(f"❌ Error: {e}")
+
 
     def edit_project(self):
         project_id = input("Project ID: ").strip()
         new_name = input("New project name (leave blank to skip): ").strip() or None
         new_description = input("New description (leave blank to skip): ").strip() or None
+
         try:
-            self.project_service.edit_project(project_id, new_name, new_description)
+            self.project_service.edit_project(
+                project_id=project_id,
+                new_name=new_name,
+                new_description=new_description
+            )
             print("✅ Project updated successfully.")
         except Exception as e:
             print(f"❌ Error: {e}")
+
 
     def delete_project(self):
         project_id = input("Project ID: ").strip()
@@ -48,58 +59,81 @@ class TaskCLI:
             print(f"❌ Error: {e}")
 
     # ====================== Task Commands ======================
+    # ====================== Task Commands ======================
+
     def add_task(self):
         project_id = input("Project ID: ").strip()
         title = input("Task title: ").strip()
-        description = input("Task description (optional): ").strip()
+        description = input("Task description (optional): ").strip() or None
         deadline = input("Deadline (YYYY-MM-DD, optional): ").strip() or None
+
         try:
-            task = self.task_service.create_task(project_id, title, description, deadline)
-            print(f"✅ Task '{task.title}' added to project {project_id}.")
+            task = self.task_service.create_task(
+                project_id=project_id,
+                title=title,
+                description=description,
+                deadline=deadline
+            )
+            print(f"✅ Task '{task.title}' created successfully.")
         except Exception as e:
             print(f"❌ Error: {e}")
+
 
     def list_tasks(self):
         project_id = input("Project ID: ").strip()
         try:
             tasks = self.task_service.list_tasks(project_id)
             if not tasks:
-                print("⚠️ No tasks found.")
+                print("⚠️ No tasks found for this project.")
                 return
-            for task in tasks:
-                deadline = task.deadline if task.deadline else "None"
-                print(f"ID: {task.id}\nTitle: {task.title}\nDescription: {task.description}\nStatus: {task.status}\nDeadline: {deadline}\n")
+
+            for t in tasks:
+                print(
+                    f"ID: {t.id}\n"
+                    f"Title: {t.title}\n"
+                    f"Description: {t.description}\n"
+                    f"Status: {t.status}\n"
+                    f"Deadline: {t.deadline}\n"
+                )
+
         except Exception as e:
             print(f"❌ Error: {e}")
 
+
     def edit_task(self):
-        project_id = input("Project ID: ").strip()
         task_id = input("Task ID: ").strip()
+
         title = input("New title (leave blank to skip): ").strip() or None
         description = input("New description (leave blank to skip): ").strip() or None
         status = input("New status (todo/doing/done, leave blank to skip): ").strip() or None
         deadline = input("New deadline (YYYY-MM-DD, leave blank to skip): ").strip() or None
+
         try:
-            self.task_service.edit_task(project_id, task_id, title, description, status, deadline)
+            self.task_service.update_task(
+                task_id=task_id,
+                title=title,
+                description=description,
+                status=status,
+                deadline=deadline
+            )
             print("✅ Task updated successfully.")
         except Exception as e:
             print(f"❌ Error: {e}")
 
     def update_task_status(self):
-        project_id = input("Project ID: ").strip()
         task_id = input("Task ID: ").strip()
         new_status = input("New status (todo/doing/done): ").strip()
         try:
-            self.task_service.update_status(project_id, task_id, new_status)
-            print("✅ Task status updated.")
+            self.task_service.update_status(task_id=task_id, new_status=new_status)
+            print("✅ Task status updated successfully.")
         except Exception as e:
             print(f"❌ Error: {e}")
 
+
     def delete_task(self):
-        project_id = input("Project ID: ").strip()
         task_id = input("Task ID: ").strip()
         try:
-            self.task_service.delete_task(project_id, task_id)
-            print("✅ Task deleted successfully.")
+            self.task_service.delete_task(task_id)
+            print("🗑️ Task deleted successfully.")
         except Exception as e:
             print(f"❌ Error: {e}")

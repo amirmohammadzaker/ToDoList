@@ -1,47 +1,105 @@
-from models.task import Task, TaskError
-from services.project_service import ProjectService
+# services/task_service.py
+
+import os
 from typing import Optional, List
 
-MAX_NUMBER_OF_TASK = 10
+from repositories.task_repository import TaskRepository
+from repositories.project_repository import ProjectRepository
+
+from exceptions.service_exceptions import TaskLimitReachedError
+from models.task import Task
+
+MAX_NUMBER_OF_TASK = int(os.getenv("MAX_NUMBER_OF_TASK", 10))
+
 
 class TaskService:
-    def __init__(self, project_service: ProjectService):
-        self.project_service = project_service
+    """Application layer: Implements business logic for Tasks."""
 
-    def create_task(self, project_id: str, title: str, description: str, deadline: Optional[str] = None) -> Task:
-        project = self.project_service.get_project_by_id(project_id)
-        if len(project.tasks) >= MAX_NUMBER_OF_TASK:
-            raise TaskError(f"Cannot add more than {MAX_NUMBER_OF_TASK} tasks to project '{project.name}'.")
-        task = Task(title, description, deadline=deadline)
-        project.tasks.append(task)
-        return task
+    def __init__(self, task_repo: TaskRepository, project_repo: ProjectRepository):
+        self.task_repo = task_repo
+        self.project_repo = project_repo
+
+    # -----------------------------
+    # CREATE
+    # -----------------------------
+    def create_task(
+        self,
+        project_id: str,
+        title: str,
+        description: Optional[str] = None,
+        deadline: Optional[str] = None
+    ) -> Task:
+
+        # 1. Ensure project exists
+        project = self.project_repo.get_project_by_id(project_id)
+        # 2. Ensure task limit per project is not exceeded
+        count = self.task_repo.count_tasks_for_project(project_id)
+        if count >= MAX_NUMBER_OF_TASK:
+            raise TaskLimitReachedError(
+                f"Cannot create more than {MAX_NUMBER_OF_TASK} tasks in this project."
+            )
+
+        # 3. Create task entity
+        task = Task(
+            title=title,
+            description=description,
+            deadline=deadline,
+            project_id=project_id
+        )
+
+        # 4. Save
+        return self.task_repo.create_task(task)
+
+    # -----------------------------
+    # READ
+    # -----------------------------
+    def get_task(self, task_id: str) -> Task:
+        return self.task_repo.get_task_by_id(task_id)
 
     def list_tasks(self, project_id: str) -> List[Task]:
-        project = self.project_service.get_project_by_id(project_id)
-        return project.tasks
+        return self.task_repo.get_tasks_by_project_id(project_id)
 
-    def edit_task(self, project_id: str, task_id: str, title: Optional[str] = None, description: Optional[str] = None,
-                  status: Optional[str] = None, deadline: Optional[str] = None):
-        project = self.project_service.get_project_by_id(project_id)
-        for task in project.tasks:
-            if task.id == task_id:
-                if title: task.title = title
-                if description: task.description = description
-                if status:
-                    if status not in Task.VALID_STATUSES:
-                        raise TaskError(f"Invalid status '{status}'. Must be one of {Task.VALID_STATUSES}.")
-                    task.status = status
-                if deadline: task.deadline = deadline
-                return
-        raise TaskError(f"Task with ID '{task_id}' not found in project '{project.name}'.")
+    # -----------------------------
+    # UPDATE
+    # -----------------------------
+    def update_task(
+        self,
+        task_id: str,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        status: Optional[str] = None,
+        deadline: Optional[str] = None
+    ) -> Task:
 
-    def update_status(self, project_id: str, task_id: str, new_status: str):
-        self.edit_task(project_id, task_id, status=new_status)
+        task =self.task_repo.get_task_by_id(task_id)
 
-    def delete_task(self, project_id: str, task_id: str):
-        project = self.project_service.get_project_by_id(project_id)
-        for task in project.tasks:
-            if task.id == task_id:
-                project.tasks.remove(task)
-                return
-        raise TaskError(f"Task with ID '{task_id}' not found in project '{project.name}'.")
+        if title is not None:
+            task.title = title
+
+        if description is not None:
+            task.description = description
+
+        if status is not None:
+            task.status = status
+
+        if deadline is not None:
+            task.deadline = deadline
+
+        return self.task_repo.update_task(task)
+    
+    def update_status(self, task_id: str, new_status: str):
+        # بررسی وجود تسک
+        task = self.task_repo.get_task_by_id(task_id)
+        if not task:
+            raise Exception(f"Task with ID '{task_id}' not found.")
+
+        # آپدیت وضعیت با استفاده از متد Repository
+        return self.task_repo.update_task_status(task, new_status)
+
+    
+    # -----------------------------
+    # DELETE
+    # -----------------------------
+    def delete_task(self, task_id: str):
+        task = self.task_repo.get_task_by_id(task_id)
+        self.task_repo.delete_task(task)
