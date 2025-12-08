@@ -1,17 +1,23 @@
 # app/cli/console.py
 
+import warnings
+
 class TaskCLI:
     def __init__(self, project_service, task_service):
         """
+        ⚠️ Deprecated: CLI interface is deprecated and will be removed in a future version.
+        Please use the FastAPI API endpoints instead.
+
         Dependency Injection: سرویس‌ها از بیرون به CLI داده می‌شوند.
         """
+        print("⚠️ CLI interface is deprecated and will be removed in a future version. Please use the FastAPI API endpoints instead.")        
         self.project_service = project_service
         self.task_service = task_service
 
     # ====================== Project Commands ======================
-    # ====================== Project Commands ======================
 
     def create_project(self):
+        """Create a new project (Deprecated CLI)."""
         name = input("Project name: ").strip()
         description = input("Project description (optional): ").strip()
         try:
@@ -20,8 +26,8 @@ class TaskCLI:
         except Exception as e:
             print(f"❌ Error: {e}")
 
-
     def list_projects(self):
+        """List all projects (Deprecated CLI)."""
         try:
             projects = self.project_service.list_projects()
             if not projects:
@@ -33,8 +39,8 @@ class TaskCLI:
         except Exception as e:
             print(f"❌ Error: {e}")
 
-
     def edit_project(self):
+        """Edit a project (Deprecated CLI)."""
         project_id = input("Project ID: ").strip()
         new_name = input("New project name (leave blank to skip): ").strip() or None
         new_description = input("New description (leave blank to skip): ").strip() or None
@@ -49,8 +55,8 @@ class TaskCLI:
         except Exception as e:
             print(f"❌ Error: {e}")
 
-
     def delete_project(self):
+        """Delete a project (Deprecated CLI)."""
         project_id = input("Project ID: ").strip()
         try:
             self.project_service.delete_project(project_id)
@@ -59,9 +65,9 @@ class TaskCLI:
             print(f"❌ Error: {e}")
 
     # ====================== Task Commands ======================
-    # ====================== Task Commands ======================
 
     def add_task(self):
+        """Add a new task to a project (Deprecated CLI)."""
         project_id = input("Project ID: ").strip()
         title = input("Task title: ").strip()
         description = input("Task description (optional): ").strip() or None
@@ -78,8 +84,8 @@ class TaskCLI:
         except Exception as e:
             print(f"❌ Error: {e}")
 
-
     def list_tasks(self):
+        """List all tasks for a project (Deprecated CLI)."""
         project_id = input("Project ID: ").strip()
         try:
             tasks = self.task_service.list_tasks(project_id)
@@ -99,8 +105,8 @@ class TaskCLI:
         except Exception as e:
             print(f"❌ Error: {e}")
 
-
     def edit_task(self):
+        """Edit a task (Deprecated CLI)."""
         task_id = input("Task ID: ").strip()
 
         title = input("New title (leave blank to skip): ").strip() or None
@@ -121,6 +127,7 @@ class TaskCLI:
             print(f"❌ Error: {e}")
 
     def update_task_status(self):
+        """Update task status (Deprecated CLI)."""
         task_id = input("Task ID: ").strip()
         new_status = input("New status (todo/doing/done): ").strip()
         try:
@@ -129,8 +136,8 @@ class TaskCLI:
         except Exception as e:
             print(f"❌ Error: {e}")
 
-
     def delete_task(self):
+        """Delete a task (Deprecated CLI)."""
         task_id = input("Task ID: ").strip()
         try:
             self.task_service.delete_task(task_id)
