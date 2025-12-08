@@ -2,12 +2,12 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from services.task_service import TaskService
-from controller_schemas.requests.tasks_request_schema import (
+from ..controller_schemas.requests.tasks_request_schema import (
     TaskCreateRequest,
     TaskUpdateRequest,
     TaskStatusUpdateRequest
 )
-from api.controller_schemas.responses.tasks_response_schema import TaskResponse
+from ..controller_schemas.responses.tasks_response_schema import TaskResponse
 from exceptions.service_exceptions import TaskLimitReachedError
 from repositories.project_repository import ProjectRepository
 from repositories.task_repository import TaskRepository
@@ -15,10 +15,14 @@ from repositories.task_repository import TaskRepository
 router = APIRouter()
 
 # Dependency injection for TaskService
+from db.session import SessionLocal
+
 def get_task_service():
-    project_repo = ProjectRepository()
-    task_repo = TaskRepository()
+    db = SessionLocal()                 # یک Session باز می‌کنیم
+    project_repo = ProjectRepository(db)
+    task_repo = TaskRepository(db)
     return TaskService(task_repo=task_repo, project_repo=project_repo)
+
 
 # ===========================
 # Routes
