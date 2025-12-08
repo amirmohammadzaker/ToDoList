@@ -2,8 +2,8 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from services.project_service import ProjectService
-from api.controller_schemas.requests.projects_request_schema import ProjectCreateRequest, ProjectUpdateRequest
-from api.controller_schemas.responses.projects_response_schema import ProjectResponse
+from ..controller_schemas.requests.projects_request_schema import ProjectCreateRequest, ProjectUpdateRequest
+from ..controller_schemas.responses.projects_response_schema import ProjectResponse
 from models.project import ProjectError
 
 router = APIRouter()
