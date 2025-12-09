@@ -1,8 +1,10 @@
-# TODOLIST/api/routers.py
 from fastapi import APIRouter
 from .controllers import projects_controller, tasks_controller
 
-api_router = APIRouter(prefix="/api/v1")
+api_router: APIRouter = APIRouter(prefix="/api/v1")
+"""
+Main API router that includes all sub-routers for the application.
+"""
 
 # Register Project Router
 api_router.include_router(
